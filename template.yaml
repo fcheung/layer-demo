@@ -1,0 +1,45 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+Description: >
+  layer-demo
+
+  Sample SAM Template for layer-demo
+
+# More info about Globals: https://github.com/awslabs/serverless-application-model/blob/master/docs/globals.rst
+Globals:
+  Function:
+    Timeout: 3
+
+Resources:
+  Function1:
+    Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
+    Properties:
+      CodeUri: function1/
+      Handler: app.lambda_handler
+      Runtime: ruby2.7
+      Layers:
+        - !Ref Dependencies
+    Metadata:
+      BuildMethod: 'makefile'
+  
+  Function2:
+    Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
+    Properties:
+      CodeUri: function2/
+      Handler: app.lambda_handler
+      Runtime: ruby2.7
+      Layers:
+        - !Ref Dependencies
+    Metadata:
+      BuildMethod: 'makefile'
+  Dependencies:
+    Type: AWS::Serverless::LayerVersion
+    Properties:
+      LayerName: !Sub "${AWS::StackName}-dependencies"
+      ContentUri: dependencies/
+      CompatibleRuntimes:
+        - ruby2.7
+      LicenseInfo: 'MIT'
+      RetentionPolicy: Retain
+    Metadata:
+      BuildMethod: 'makefile'
